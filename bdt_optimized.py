@@ -48,33 +48,60 @@ destination_engine = create_engine(destination_connectionurl)
 
 # --- Tokenization Function ---
 def process_row(row_idx, row_dict):
-    payload = []
-    for col in tokenized_column:
-        if col in row_dict:
-            payload.append({
-                "tokengroup": policy_columns[0]["config"][0]["tokenGroup"],
-                "data": row_dict[col],
-                "tokentemplate": policy_columns[0]["config"][0]["tokenTemplate"]
-            })
-    headers = {
-        "Content-Type": "application/json"
-    }
-    try:
-        response = requests.post(
-            vts_tokenUrl,
-            json=payload,
-            headers=headers,
-            auth=HTTPBasicAuth(vts_user, vts_pass),
-            verify=False
-        )
-        response.raise_for_status()
-        response_json = response.json()
-        if "status" in response_json:
-            print(f"❌ Skipped row {row_idx}: Token API error response")
-            return (row_idx, None)
+    tokenize_payload = []
+    detokenize_payload = []
+    col_action_map = {}
 
-        for col, token_data in zip(tokenized_column, response_json):
-            row_dict[col] = token_data["token"]
+    # Prepare payloads per action per column
+    for col_config in policy_columns:
+        col_name = col_config["name"]
+        action = col_config["action"]
+        col_action_map[col_name] = action
+        if col_name in row_dict:
+            config = col_config["config"][0]
+            if action == "TOKENIZE":
+                tokenize_payload.append({
+                    "tokengroup": config["tokenGroup"],
+                    "data": row_dict[col_name],
+                    "tokentemplate": config["tokenTemplate"]
+                })
+            elif action == "DETOKENIZE":
+                detokenize_payload.append({
+                    "tokengroup": config["tokenGroup"],
+                    "token": row_dict[col_name],
+                    "tokentemplate": config["tokenTemplate"]
+                })
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        # Process TOKENIZE
+        if tokenize_payload:
+            response = requests.post(
+                vts_tokenUrl,
+                json=tokenize_payload,
+                headers=headers,
+                auth=HTTPBasicAuth(vts_user, vts_pass),
+                verify=False
+            )
+            response.raise_for_status()
+            tokens = response.json()
+            for col_config, token_data in zip([c for c in policy_columns if c["action"] == "TOKENIZE"], tokens):
+                row_dict[col_config["name"]] = token_data["token"]
+
+        # Process DETOKENIZE
+        if detokenize_payload:
+            response = requests.post(
+                vts_detokenUrl,
+                json=detokenize_payload,
+                headers=headers,
+                auth=HTTPBasicAuth(vts_user, vts_pass),
+                verify=False
+            )
+            response.raise_for_status()
+            detokens = response.json()
+            for col_config, token_data in zip([c for c in policy_columns if c["action"] == "DETOKENIZE"], detokens):
+                row_dict[col_config["name"]] = token_data["data"]
 
         return (row_idx, row_dict)
 

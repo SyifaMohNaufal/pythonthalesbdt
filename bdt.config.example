@@ -1,0 +1,40 @@
+{
+  "inputDirectory" : "../samples/resources",
+  "outputDirectory" : "../temp",
+  "threadCount" : 4,
+  "batchSize" : 30000,
+  "vts" : {
+    "hostName" : "",
+    "userName" : "",
+    "password" : "",
+    "tokenUrl" : "",
+    "detokenUrl" : "",
+    "sslConfig" : {
+      "serverConfig" : {
+        "truststore" : "",
+        "password" : "",
+        "verifyHostname" : false,
+        "sslMode" : "ALLOW_ALL"
+      },
+      "clientConfig" : {
+        "keystore" : "",
+        "sslMode" : "ALLOW_ALL",
+        "storePassword" : "",
+        "keyPassword" : ""
+      }
+    }
+  },
+  "crypto" : {
+    "@type" : "VAE",
+    "pin" : ""
+  },
+  "characterSets" : [ {
+    "latin" : [ "0020-007E" ]
+  }, {
+    "digits" : [ "0030-0039" ]
+  }, {
+    "alphabets" : [ "0041-005A", "0061-007A" ]
+  }, {
+    "alphanumeric" : [ "0030-0039", "0041-005A", "0061-007A" ]
+  } ]
+}

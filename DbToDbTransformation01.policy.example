@@ -1,0 +1,42 @@
+{
+  "id" : "SqlServerToSqlServer",
+  "name" : "SqlServerToSqlServerSample",
+  "caseSensitive" : false,
+  "source" : {
+    "@type" : "SQL_SERVER",
+    "connectionurl" : "",
+    "username" : "",
+    "password" : "",
+    "driverclass" : "{ODBC Driver 17 for SQL Server}"
+  },
+  "destination" : {
+    "@type" : "SQL_SERVER",
+    "connectionurl" : "",
+    "username" : "",
+    "password" : "",
+    "driverclass" : "{ODBC Driver 17 for SQL Server}"
+  },
+  "tables" : [ {
+    "sourceSchema" : "",
+    "destinationSchema" : "",
+    "columns" : [
+        {
+          "name" : "data",
+          "action" : "TOKENIZE",
+          "config" : [ 
+            {
+              "@type" : "TOKENIZE",
+              "tokenGroup" : "",
+              "tokenTemplate" : ""
+            }
+          ]
+        }
+      ],
+    "createDestinationTable" : false,
+    "createUniqueKey" : false,
+    "sourceTable" : "",
+    "destinationTable" : ""
+  } ],
+  "inPlaceUpdate" : false,
+  "createBadRecordFile" : true
+}
