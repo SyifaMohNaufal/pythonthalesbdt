@@ -1,19 +1,40 @@
+import os
 import json
 import requests
 import urllib3
 import time
+import argparse
 from requests.auth import HTTPBasicAuth
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-start_time = time.time()
+
+
+# Argument parser
+parser = argparse.ArgumentParser(description="BDT Transformation Script")
+parser.add_argument(
+    "-p", "--policy",
+    required=True,
+    help="Path to the transformation policy JSON file"
+)
+parser.add_argument(
+    "-c", "--config",
+    default="bdt.config",
+    help="Path to the config JSON file (default: bdt.config)"
+)
+args = parser.parse_args()  # ✅ harus setelah semua add_argument()
 
 # Load transformation policy
-with open('DbToDbTransformation01.policy', 'r', encoding='utf-8') as f:
+with open(args.policy, 'r', encoding='utf-8') as f:
     policy_data = json.load(f)
+
+# Load config
+with open(args.config, 'r', encoding='utf-8') as f:
+    config_data = json.load(f)
 
 policy_id = policy_data["id"]
 policy_name = policy_data["name"]
@@ -30,10 +51,6 @@ policy_destinationSchema = policy_tables[0]["destinationSchema"]
 policy_sourceTable = policy_tables[0]["sourceTable"]
 policy_destinationTable = policy_tables[0]["destinationTable"]
 
-# Load BDT config
-with open('bdt.config', 'r', encoding='utf-8') as f:
-    config_data = json.load(f)
-
 config_batch_size = config_data["batchSize"]
 config_vts = config_data["vts"]
 vts_host = config_vts["hostName"]
@@ -46,11 +63,16 @@ vts_detokenUrl = config_vts["detokenUrl"]
 source_engine = create_engine(source_connectionurl)
 destination_engine = create_engine(destination_connectionurl)
 
+def get_timestamp():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 # --- Tokenization Function ---
 def process_row(row_idx, row_dict):
     tokenize_payload = []
     detokenize_payload = []
     col_action_map = {}
+
+    print(f"[INFO] {get_timestamp()} Row {row_idx} start processing")
 
     # Prepare payloads per action per column
     for col_config in policy_columns:
@@ -102,15 +124,23 @@ def process_row(row_idx, row_dict):
             detokens = response.json()
             for col_config, token_data in zip([c for c in policy_columns if c["action"] == "DETOKENIZE"], detokens):
                 row_dict[col_config["name"]] = token_data["data"]
-
+        print(f"[INFO] {get_timestamp()} Row {row_idx} processed successfully")
         return (row_idx, row_dict)
 
     except Exception as e:
         print(f"❌ Error processing row {row_idx}: {e}")
         return (row_idx, None)
+    
+def get_optimal_workers(io_bound=True):
+    cpu_cores = os.cpu_count() or 1
+    if io_bound:
+        return cpu_cores * 5  # or 2x, 4x depending on your use case
+    else:
+        return cpu_cores
 
 # --- Main Execution ---
 try:
+    start_time = time.time()
     print("🔌 Connecting to source and destination databases...")
     with source_engine.connect() as sconn, destination_engine.connect() as dconn:
         print("Source connection: ", sconn.execute(text("SELECT 1")).scalar())
@@ -123,12 +153,13 @@ try:
             print("⚠️ Record total exceeds the batch size limit")
         
         # Get all rows
-        source_data = sconn.execute(text(f"SELECT * FROM {policy_sourceTable} ORDER BY create_date ASC"))
+        source_data = sconn.execute(text(f"SELECT * FROM {policy_sourceTable} ORDER BY created_at ASC"))
         source_data = list(source_data.mappings())  # For indexable access
 
         # Prepare multithread processing
         results = [None] * len(source_data)
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        print("optimal workers:", get_optimal_workers(io_bound=True))
+        with ThreadPoolExecutor(max_workers=get_optimal_workers(io_bound=True)) as executor:
             futures = [
                 executor.submit(process_row, idx, dict(row))
                 for idx, row in enumerate(source_data)
@@ -154,8 +185,14 @@ try:
             total_count += 1
         dconn.commit()
 
+except KeyboardInterrupt:
+    print("\n🛑 Process interrupted by user (Ctrl+C). Exiting gracefully...")        
+
 except SQLAlchemyError as e:
     print("❌ Database connection failed:", e)
+
+except Exception as e:
+    print(f"❌ Unexpected error: {e}")
 
 end_time = time.time()
 elapsed_time = round(end_time - start_time)
