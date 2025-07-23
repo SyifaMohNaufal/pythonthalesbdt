@@ -5,7 +5,7 @@
 
 ---
 
-## 🚀 Features
+## Features
 
 - ✅ Async HTTP tokenization and detokenization using `httpx` + Thales VTS
 - ✅ Source → transform → destination pipeline
