@@ -20,7 +20,7 @@ Ensure you have the following installed before proceeding:
 - `pip` (Python package manager)
 - `virtualenv` (for environment isolation)
 
-## 📦 Installation
+## Installation
 
 ```bash
 git clone https://github.com/SyifaMohNaufal/pythonthalesbdt.git
@@ -30,9 +30,9 @@ pip install -r requirements.txt
 
 ---
 
-## ⚙️ Configuration
+## ⚙Configuration
 
-### 1. 🔧 Policy File (`*.policy`)
+### 1. Policy File (`*.policy`)
 
 Defines:
 
@@ -79,7 +79,7 @@ Defines:
 }
 ```
 
-## 🔌 Database Connection String Templates
+## Database Connection String Templates
 These are database connection strings template of supported database
 
 | Database                      | SQLAlchemy Dialect    | Connection String Format                                                         |
@@ -93,7 +93,7 @@ These are database connection strings template of supported database
 
 ---
 
-### 2. 🔐 Config File (`bdt.config`)
+### 2. Config File (`bdt.config`)
 
 Stores global configuration for VTS API access and batching.
 
@@ -111,7 +111,7 @@ Stores global configuration for VTS API access and batching.
 
 ---
 
-## 🧪 Usage
+## Usage
 
 ```bash
 python bdt_v4.py -p your_policy.policy -c bdt.config
@@ -119,7 +119,7 @@ python bdt_v4.py -p your_policy.policy -c bdt.config
 
 
 
-## 📈 Log Output Example
+## Log Output Example
 
 ```
 [INFO] 2025-07-22 10:00:01 Row 0 - Start processing
@@ -129,7 +129,7 @@ python bdt_v4.py -p your_policy.policy -c bdt.config
 
 ---
 
-## 🧵 How It Works
+## How It Works
 
 1. Reads data from the source DB using SQLAlchemy
 2. Applies tokenization or detokenization via async HTTP
@@ -138,7 +138,7 @@ python bdt_v4.py -p your_policy.policy -c bdt.config
 
 ---
 
-## 🔁 Retry and Error Handling
+## Retry and Error Handling
 
 * API calls use retry with exponential backoff
 * Failed rows are logged with details
@@ -146,7 +146,7 @@ python bdt_v4.py -p your_policy.policy -c bdt.config
 
 ---
 
-## 🧪 Testing
+## Testing
 
 You can test using:
 
@@ -156,7 +156,7 @@ You can test using:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork this repo
 2. Create a new branch (`git checkout -b feature/thing`)
@@ -165,13 +165,13 @@ You can test using:
 
 ---
 
-## 📄 License
+## License
 
 MIT License — see the [LICENSE](LICENSE) file for full text.
 
 ---
 
-## 👤 Author
+## Author
 
 **Syifa Mohammad Naufal**
 GitHub: [@SyifaMohNaufal](https://github.com/SyifaMohNaufal)
