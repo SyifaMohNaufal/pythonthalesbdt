@@ -2,7 +2,6 @@
 
 **PythonThalesBDT** is a Python-based batch data transformer that integrates with **Thales VTS (Vault Tokenization Server)** for secure field-level data tokenization and detokenization. This tool pulls data from a source DB, processes sensitive fields via HTTP APIs, and pushes the output to a destination DB using SQLAlchemy.
 
----
 ## Prerequisites
 Ensure you have the following installed before proceeding:
 - Python 3.x
