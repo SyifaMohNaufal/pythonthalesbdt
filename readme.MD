@@ -16,7 +16,6 @@ cd pythonthalesbdt
 pip install -r requirements.txt
 ````
 
----
 
 ## ⚙Configuration
 
