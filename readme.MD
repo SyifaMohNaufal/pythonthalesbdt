@@ -14,7 +14,7 @@ Ensure you have the following installed before proceeding:
 git clone https://github.com/SyifaMohNaufal/pythonthalesbdt.git
 cd pythonthalesbdt
 pip install -r requirements.txt
-````
+```
 
 
 ## ⚙Configuration
@@ -78,7 +78,6 @@ These are database connection strings template of supported database
 | MySQL                         | `mysql+pymysql`       | `mysql+pymysql://user:pass@host:3306/dbname`                                     |                                    |
 | MariaDB                       | `mariadb+pymysql`     | `mariadb+pymysql://user:pass@host:3306/dbname`                                   |
 
----
 
 ### 2. Config File (`bdt.config`)
 
@@ -96,8 +95,6 @@ Stores global configuration for VTS API access and batching.
 }
 ```
 
----
-
 ## Usage
 
 ```bash
@@ -114,8 +111,6 @@ python bdt_v4.py -p your_policy.policy -c bdt.config
 [INFO] 2025-07-22 10:00:02 Row 0 - Processed successfully
 ```
 
----
-
 ## How It Works
 
 1. Reads data from the source DB
@@ -123,15 +118,11 @@ python bdt_v4.py -p your_policy.policy -c bdt.config
 3. Logs and tracks each row's outcome
 4. Inserts valid rows into the destination DB
 
----
-
 ## Retry and Error Handling
 
 * API calls use retry with exponential backoff
 * Failed rows are logged with details
 * You can safely rerun the script if partial rows fail
-
----
 
 ## Testing
 
@@ -141,8 +132,6 @@ You can test using:
 * A mock Thales VTS endpoint
 * Debug logs from each tokenized/detokenized row
 
----
-
 ## Contributing
 
 1. Fork this repo
@@ -150,13 +139,9 @@ You can test using:
 3. Commit and push (`git commit -m "Add cool thing"`)
 4. Open a Pull Request
 
----
-
 ## License
 
 MIT License — see the [LICENSE](LICENSE) file for full text.
-
----
 
 ## Author
 
