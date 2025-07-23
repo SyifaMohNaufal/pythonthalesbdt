@@ -4,15 +4,6 @@
 **PythonThalesBDT** is a Python-based batch data transformer that integrates with **Thales VTS (Vault Tokenization Server)** for secure field-level data tokenization and detokenization. This tool pulls data from a source DB, processes sensitive fields via HTTP APIs, and pushes the output to a destination DB using SQLAlchemy.
 
 ---
-
-## Features
-
-- ✅ Async HTTP tokenization and detokenization using `httpx` + Thales VTS
-- ✅ Source → transform → destination pipeline
-- ✅ Configurable JSON-based transformation policy
-- ✅ Robust retry, error logging, and per-row traceability
-- ✅ Concurrent processing with asyncio + thread pool for database tasks
-
 ---
 ## Prerequisites
 Ensure you have the following installed before proceeding:
@@ -131,8 +122,8 @@ python bdt_v4.py -p your_policy.policy -c bdt.config
 
 ## How It Works
 
-1. Reads data from the source DB using SQLAlchemy
-2. Applies tokenization or detokenization via async HTTP
+1. Reads data from the source DB
+2. Applies tokenization or detokenization
 3. Logs and tracks each row's outcome
 4. Inserts valid rows into the destination DB
 
